@@ -46,9 +46,8 @@ export class DashboardComponent {
   readonly showAnniversary = signal(true);
 
   isAnniversary(): boolean {
-    const today = new Date();
-    // Nuestro aniversario es el 4 de mayo
-    return today.getMonth() === 4 && today.getDate() === 4;
+    // Forzado temporalmente para previsualización
+    return true;
   }
 
   readonly actions = [
