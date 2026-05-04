@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -7,7 +7,6 @@ type GreetingPeriod = 'morning' | 'afternoon' | 'night' | 'lateNight';
 interface DashboardGreeting {
   title: string;
   message: string;
-  periodLabel: string;
 }
 
 const GREETING_MESSAGES: Record<GreetingPeriod, string[]> = {
@@ -44,6 +43,13 @@ export class DashboardComponent {
   private readonly auth = inject(AuthService);
   readonly currentUser = this.auth.currentUser;
   readonly greeting = this.buildGreeting();
+  readonly showAnniversary = signal(true);
+
+  isAnniversary(): boolean {
+    const today = new Date();
+    // Nuestro aniversario es el 4 de mayo
+    return today.getMonth() === 4 && today.getDate() === 4;
+  }
 
   readonly actions = [
     {
@@ -79,7 +85,6 @@ export class DashboardComponent {
     return {
       title: titleByPeriod[period],
       message: this.pickRandom(GREETING_MESSAGES[period]),
-      periodLabel: this.getPeriodLabel(period),
     };
   }
 
@@ -97,17 +102,6 @@ export class DashboardComponent {
     }
 
     return 'lateNight';
-  }
-
-  private getPeriodLabel(period: GreetingPeriod): string {
-    const labels: Record<GreetingPeriod, string> = {
-      morning: '05:00 - 11:59',
-      afternoon: '12:00 - 18:59',
-      night: '19:00 - 21:59',
-      lateNight: '22:00 - 04:59',
-    };
-
-    return labels[period];
   }
 
   private pickRandom(messages: string[]): string {

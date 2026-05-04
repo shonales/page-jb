@@ -28,7 +28,12 @@ export class PhotoAlbumComponent implements OnInit {
   uploadTitle = signal('');
   uploadDescription = signal('');
   uploadDate = signal(new Date().toISOString().split('T')[0]);
+  uploadPreview = signal<string | null>(null);
   selectedFile: File | null = null;
+
+  // Touch signals
+  private touchStartX = 0;
+  private touchEndX = 0;
 
   currentPhoto = computed(() => this.photos()[this.currentIndex()]);
   totalPages = computed(() => this.photos().length);
@@ -56,6 +61,37 @@ export class PhotoAlbumComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files?.length) {
       this.selectedFile = input.files[0];
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.uploadPreview.set(reader.result as string);
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  handleTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+
+  handleTouchEnd(event: TouchEvent): void {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+
+  private handleSwipe(): void {
+    const swipeThreshold = 50;
+    const diff = this.touchStartX - this.touchEndX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe left -> Next
+        this.nextPage();
+      } else {
+        // Swipe right -> Previous
+        this.previousPage();
+      }
     }
   }
 
@@ -77,6 +113,7 @@ export class PhotoAlbumComponent implements OnInit {
       this.showUploadForm.set(false);
       this.uploadTitle.set('');
       this.uploadDescription.set('');
+      this.uploadPreview.set(null);
       this.selectedFile = null;
       await this.loadPhotos();
     } catch (err) {

@@ -37,6 +37,13 @@
         Seleccionar foto
         <input type="file" accept="image/*" (change)="handleFileChange($event)" />
       </label>
+
+      @if (uploadPreview()) {
+        <div class="upload-preview">
+          <img [src]="uploadPreview()!" alt="Vista previa" />
+        </div>
+      }
+
       <button [disabled]="isUploading()" (click)="submitUpload()">
         {{ isUploading() ? 'Subiendo...' : 'Guardar recuerdo' }}
       </button>
@@ -63,7 +70,7 @@
       }
     </section>
   } @else if (currentPhoto()) {
-    <section class="book-stage">
+    <section class="book-stage" (touchstart)="handleTouchStart($event)" (touchend)="handleTouchEnd($event)">
       <div class="book">
         <div class="book-spine"></div>
 
