@@ -39,8 +39,8 @@ export class App {
       .toUpperCase();
   }
 
-  logout(): void {
-    this.auth.logout();
+  async logout(): Promise<void> {
+    await this.auth.logout();
     this.router.navigateByUrl('/login');
   }
 }

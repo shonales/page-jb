@@ -49,25 +49,25 @@ export class DashboardComponent {
     {
       title: 'Albun de fotos',
       path: '/albun',
-      cover: '/dashboard-covers/albun.jpeg',
+      cover: 'dashboard-covers/albun.jpeg',
       accent: 'teal',
     },
     {
       title: 'Linea de tiempo',
       path: '/timeline',
-      cover: '/dashboard-covers/line-time.jpeg',
+      cover: 'dashboard-covers/line-time.jpeg',
       accent: 'gold',
     },
     {
       title: 'Cartas',
       path: '/cartas',
-      cover: '/dashboard-covers/letter.jpeg',
+      cover: 'dashboard-covers/letter.jpeg',
       accent: 'rose',
     },
     {
       title: 'Minijuegos',
       path: '/juegos',
-      cover: '/dashboard-covers/game.jpeg',
+      cover: 'dashboard-covers/game.jpeg',
       accent: 'blue',
     },
   ];

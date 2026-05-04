@@ -46,8 +46,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     clearInterval(this.catTimer);
   }
 
-  enter(): void {
-    const loggedIn = this.auth.login(this.email(), this.accessCode());
+  async enter(): Promise<void> {
+    const loggedIn = await this.auth.login(this.email(), this.accessCode());
 
     if (!loggedIn) {
       this.loginError.set('Usuario o contrasena incorrectos.');
