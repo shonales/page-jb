@@ -36,10 +36,9 @@ export class App implements OnInit {
   }
 
   isAnniversary(): boolean {
-    // Forzado para previsualización (cambiar a lógica de fecha real después)
-    return true; 
-    // const today = new Date();
-    // return today.getMonth() === 4 && today.getDate() === 4;
+    const today = new Date();
+    // Nuestro aniversario es el 4 de mayo de 2026
+    return today.getFullYear() === 2026 && today.getMonth() === 4 && today.getDate() === 4;
   }
 
   async loadAnniversaryPhotos(): Promise<void> {
