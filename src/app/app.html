@@ -20,10 +20,52 @@
         }
       </nav>
 
-      <button class="logout" type="button" (click)="logout()">Salir</button>
+      <div class="header-actions">
+        @if (isAnniversary()) {
+          <button class="anniversary-btn" type="button" (click)="showAnniversary.set(true)">🌹 FELIZ ANIVERSARIO</button>
+        }
+        <button class="logout" type="button" (click)="logout()">Salir</button>
+      </div>
     </header>
 
     <router-outlet />
+
+    @if (showAnniversary()) {
+      <section class="anniversary-overlay">
+        <div class="anniversary-card">
+          <button class="close-btn" (click)="showAnniversary.set(false)" aria-label="Cerrar">×</button>
+          <div class="heart-icon">❤️</div>
+          <h2>¡Feliz 1er Aniversario, mi amor!</h2>
+          
+          <div class="anniversary-scroll-box">
+            <div class="message-content">
+              <p>Hoy cumplimos nuestro primer año juntos y ha sido el mejor año de mi vida.</p>
+              
+              <div class="anniversary-gallery">
+                @for (photo of anniversaryPhotos(); track photo.id) {
+                  <div class="anniversary-photo">
+                    <img [src]="photo.photoUrl" [alt]="photo.title" />
+                  </div>
+                }
+              </div>
+
+              <p>
+                Mirando atrás, cada recuerdo que hemos guardado aquí es un pedacito de nuestra historia. 
+                Desde nuestra primera cita hasta el día de hoy, cada momento a tu lado ha sido mágico.
+              </p>
+              <p>
+                Gracias por estar conmigo, por hacerme tan feliz y por compartir tu vida conmigo. 
+                Este año ha sido solo el comienzo de una trayectoria hermosa que quiero seguir 
+                construyendo siempre a tu lado.
+              </p>
+              <p class="final-note">Te amo con todo mi corazón. ¡Por muchos años más juntos! 🌹</p>
+            </div>
+          </div>
+          
+          <button class="celebrate-btn" (click)="showAnniversary.set(false)">¡Te amo mucho!</button>
+        </div>
+      </section>
+    }
 
     <footer>
       <span>04/05/2025</span>
