@@ -45,9 +45,34 @@ export class App implements OnInit {
   async loadAnniversaryPhotos(): Promise<void> {
     try {
       const photos = await this.memories.getAlbumPhotos();
-      this.anniversaryPhotos.set(photos.slice(0, 4));
+      // Filtramos cualquier foto que mencione al bicho o CR7 en título o descripción
+      const filtered = photos.filter(p => 
+        !p.title.toLowerCase().includes('bicho') && 
+        !p.description.toLowerCase().includes('bicho') &&
+        !p.title.toLowerCase().includes('cr7')
+      );
+      this.anniversaryPhotos.set(filtered.slice(0, 4));
     } catch (err) {
       console.error('Error cargando fotos aniversario', err);
+    }
+  }
+
+  celebrate(): void {
+    this.createHearts();
+    setTimeout(() => this.showAnniversary.set(false), 2000);
+  }
+
+  private createHearts(): void {
+    const container = document.body;
+    for (let i = 0; i < 30; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDelay = Math.random() * 1 + 's';
+      heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+      container.appendChild(heart);
+      setTimeout(() => heart.remove(), 3000);
     }
   }
 
