@@ -11,8 +11,7 @@ import { TimelineComponent } from './features/timeline/timeline.component';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-  { path: 'albun', component: PhotoAlbumComponent, canActivate: [authGuard] },
-  { path: 'album', redirectTo: 'albun', pathMatch: 'full' },
+  { path: 'album', component: PhotoAlbumComponent, canActivate: [authGuard] },
   { path: 'timeline', component: TimelineComponent, canActivate: [authGuard] },
   { path: 'cartas', component: LettersComponent, canActivate: [authGuard] },
   { path: 'juegos', component: GamesComponent, canActivate: [authGuard] },

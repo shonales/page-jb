@@ -16,7 +16,7 @@ export class App {
 
   readonly navItems = [
     { path: '/dashboard', label: 'Dashboard' },
-    { path: '/albun', label: 'Albun' },
+    { path: '/album', label: 'Album' },
     { path: '/timeline', label: 'Linea' },
     { path: '/capsula', label: 'Capsula' },
   ];

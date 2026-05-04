@@ -1,7 +1,7 @@
-<main class="album-page">
+<main class="album-page" [class.expanded-view]="isExpanded()">
   <section class="album-heading">
     <div>
-      <h1>Albun de fotos</h1>
+      <h1>Album de fotos</h1>
       <p>{{ totalPages() }} recuerdos guardados</p>
     </div>
 
@@ -10,6 +10,9 @@
         <button class="dark" type="button" (click)="openSingle(0)" [disabled]="totalPages() === 0">Modo libro</button>
       } @else {
         <button class="soft" type="button" (click)="viewMode.set('grid')">Ver todas</button>
+        <button class="soft" type="button" (click)="isExpanded.set(!isExpanded())">
+          {{ isExpanded() ? 'Reducir' : 'Ampliar vista' }}
+        </button>
         <button class="dark" type="button" (click)="lightboxOpen.set(true)">Pantalla completa</button>
       }
     </div>
@@ -48,7 +51,7 @@
           }
         </article>
 
-        <article class="book-page photo-page" [class]="pageMotion()">
+        <article class="book-page photo-page" [class]="pageMotion()" (click)="lightboxOpen.set(true)" style="cursor: zoom-in;">
           <img [src]="currentPhoto().photoUrl" [alt]="currentPhoto().title" />
         </article>
       </div>

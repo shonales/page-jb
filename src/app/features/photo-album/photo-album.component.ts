@@ -16,6 +16,7 @@ export class PhotoAlbumComponent implements OnInit {
   pageMotion = signal('');
   lightboxOpen = signal(false);
   viewMode = signal<'grid' | 'single'>('grid');
+  isExpanded = signal(false);
   loading = signal(true);
   loadError = signal('');
 

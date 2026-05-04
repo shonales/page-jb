@@ -47,9 +47,9 @@ export class DashboardComponent {
 
   readonly actions = [
     {
-      title: 'Albun de fotos',
-      path: '/albun',
-      cover: 'dashboard-covers/albun.jpeg',
+      title: 'Album de fotos',
+      path: '/album',
+      cover: 'dashboard-covers/album.jpeg',
       accent: 'teal',
     },
     {
@@ -59,7 +59,7 @@ export class DashboardComponent {
       accent: 'gold',
     },
     {
-      title: 'Capsula',
+      title: 'Cápsula del tiempo',
       path: '/capsula',
       cover: '',
       accent: 'rose',
