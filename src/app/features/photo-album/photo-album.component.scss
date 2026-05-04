@@ -27,6 +27,16 @@
   text-transform: uppercase;
 }
 
+.state-panel {
+  margin-top: 34px;
+  padding: 28px;
+  border: 1px solid rgba(99, 68, 45, 0.13);
+  border-radius: 20px;
+  background: rgba(255, 250, 241, 0.78);
+  color: #604f55;
+  font-weight: 850;
+}
+
 h1 {
   margin: 0;
   color: #2a1a13;
@@ -148,8 +158,7 @@ input {
   box-shadow: 0 28px 70px rgba(81, 57, 38, 0.17);
 }
 
-.thumb-card img,
-.thumb-card .photo-placeholder {
+.thumb-card img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;

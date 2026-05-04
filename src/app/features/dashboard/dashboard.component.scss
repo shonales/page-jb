@@ -71,6 +71,12 @@ h1 {
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
 }
 
+.action-card:not([style*='url']) {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 255, 255, 0.22), transparent 26%),
+    linear-gradient(135deg, #8f2549, #4b3427);
+}
+
 .action-card:hover {
   transform: translateY(-6px);
   filter: saturate(1.08) contrast(1.03);

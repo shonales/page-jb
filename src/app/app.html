@@ -2,7 +2,13 @@
   <div class="app-shell">
     <header class="topbar">
       <a class="profile-link" routerLink="/dashboard" aria-label="Volver al dashboard">
-        <span class="profile-avatar">{{ profileInitials() }}</span>
+        <span class="profile-avatar">
+          @if (avatarUrl()) {
+            <img [src]="avatarUrl()!" [alt]="profileName()" />
+          } @else {
+            {{ profileInitials() }}
+          }
+        </span>
         <span class="profile-copy">
           <strong>{{ profileName() }}</strong>
           <small>Page JB</small>

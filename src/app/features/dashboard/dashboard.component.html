@@ -14,7 +14,11 @@
         class="action-card"
         [class]="action.accent"
         [routerLink]="action.path"
-        [style.background-image]="'linear-gradient(180deg, rgba(14, 11, 14, 0.08), rgba(14, 11, 14, 0.64)), url(' + action.cover + ')'"
+        [style.background-image]="
+          action.cover
+            ? 'linear-gradient(180deg, rgba(14, 11, 14, 0.08), rgba(14, 11, 14, 0.64)), url(' + action.cover + ')'
+            : null
+        "
       >
         <h2>{{ action.title }}</h2>
       </a>

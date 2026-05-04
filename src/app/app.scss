@@ -46,10 +46,17 @@ nav a,
   display: grid;
   place-items: center;
   flex: 0 0 auto;
+  overflow: hidden;
   border-radius: 50%;
   background: linear-gradient(135deg, #8f2549, #4b3427);
   color: white;
   font-size: 0.88rem;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-copy {

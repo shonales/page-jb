@@ -1,23 +1,33 @@
 <main class="timeline-section">
   <div class="section-heading">
-    <p class="kicker">/timeline</p>
     <h1>Linea de tiempo</h1>
-    <p>Cada recuerdo aparece cuando lo vas encontrando al desplazarte.</p>
+    <p>{{ items().length }} momentos con fecha</p>
   </div>
 
-  <div class="timeline">
-    @for (item of items; track item.date + item.title) {
-      <article class="timeline-item">
-        <div class="marker"></div>
-        <div class="content">
-          <div class="meta">
-            <time>{{ item.date }}</time>
-            <span>{{ item.tag }}</span>
+  @if (loading()) {
+    <section class="state-panel">Cargando recuerdos...</section>
+  } @else if (loadError()) {
+    <section class="state-panel">{{ loadError() }}</section>
+  } @else {
+    <div class="timeline">
+      @for (item of items(); track item.id) {
+        <article class="timeline-item">
+          <div class="marker"></div>
+          <div class="content">
+            <img [src]="item.photoUrl" [alt]="item.title" />
+            <div class="copy">
+              <div class="meta">
+                <time>{{ formatDate(item.photoDate) }}</time>
+                @if (item.isFavorite) {
+                  <span>Favorito</span>
+                }
+              </div>
+              <h2>{{ item.title }}</h2>
+              <p>{{ item.description }}</p>
+            </div>
           </div>
-          <h2>{{ item.title }}</h2>
-          <p>{{ item.description }}</p>
-        </div>
-      </article>
-    }
-  </div>
+        </article>
+      }
+    </div>
+  }
 </main>

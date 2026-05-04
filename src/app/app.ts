@@ -12,13 +12,12 @@ export class App {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   readonly currentUser = this.auth.currentUser;
+  readonly avatarUrl = this.auth.avatarUrl;
 
   readonly navItems = [
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/albun', label: 'Albun' },
     { path: '/timeline', label: 'Linea' },
-    { path: '/cartas', label: 'Cartas' },
-    { path: '/juegos', label: 'Juegos' },
     { path: '/capsula', label: 'Capsula' },
   ];
 
@@ -27,7 +26,7 @@ export class App {
   }
 
   profileName(): string {
-    return this.currentUser() ?? 'Page JB';
+    return this.auth.displayName();
   }
 
   profileInitials(): string {

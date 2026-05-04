@@ -23,6 +23,8 @@ create table if not exists public.album_photos (
   updated_at timestamptz not null default now()
 );
 
+create unique index if not exists album_photos_photo_path_key on public.album_photos(photo_path);
+
 create table if not exists public.timeline_events (
   id uuid primary key default gen_random_uuid(),
   title text not null,

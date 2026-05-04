@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Session } from '@supabase/supabase-js';
+import { MemoriesService } from '../services/memories.service';
 import { SupabaseService } from '../services/supabase.service';
 
 export type AppUser = 'Jhon' | 'Behetsave';
@@ -14,17 +15,20 @@ const USER_EMAILS: Record<string, { email: string; name: AppUser }> = {
 })
 export class AuthService {
   private readonly supabase = inject(SupabaseService);
+  private readonly memories = inject(MemoriesService);
   private readonly ready: Promise<void>;
 
   readonly isLoggedIn = signal(false);
   readonly currentUser = signal<AppUser | null>(null);
+  readonly displayName = signal('Page JB');
+  readonly avatarUrl = signal<string | null>(null);
 
   constructor() {
     this.ready = this.loadSession();
 
     if (this.supabase.isConfigured()) {
       this.supabase.getClient().auth.onAuthStateChange((_event, session) => {
-        this.applySession(session);
+        void this.applySession(session);
       });
     }
   }
@@ -45,11 +49,11 @@ export class AuthService {
     });
 
     if (error || !data.session) {
-      this.applySession(null);
+      await this.applySession(null);
       return false;
     }
 
-    this.applySession(data.session);
+    await this.applySession(data.session);
     return true;
   }
 
@@ -58,7 +62,7 @@ export class AuthService {
       await this.supabase.getClient().auth.signOut();
     }
 
-    this.applySession(null);
+    await this.applySession(null);
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -68,19 +72,29 @@ export class AuthService {
 
   private async loadSession(): Promise<void> {
     if (!this.supabase.isConfigured()) {
-      this.applySession(null);
+    await this.applySession(null);
       return;
     }
 
     const { data } = await this.supabase.getClient().auth.getSession();
-    this.applySession(data.session);
+    await this.applySession(data.session);
   }
 
-  private applySession(session: Session | null): void {
+  private async applySession(session: Session | null): Promise<void> {
     const email = session?.user.email?.toLowerCase() ?? '';
     const user = Object.values(USER_EMAILS).find((entry) => entry.email === email)?.name ?? null;
 
     this.currentUser.set(user);
     this.isLoggedIn.set(Boolean(session && user));
+
+    if (!session || !user) {
+      this.displayName.set('Page JB');
+      this.avatarUrl.set(null);
+      return;
+    }
+
+    const profile = await this.memories.getCurrentProfile();
+    this.displayName.set(profile?.displayName ?? user);
+    this.avatarUrl.set(profile?.avatarUrl ?? null);
   }
 }

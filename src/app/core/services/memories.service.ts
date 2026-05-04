@@ -1,0 +1,94 @@
+import { Injectable, inject } from '@angular/core';
+import { MemoryPhoto, ProfileInfo } from '../../shared/models/supabase-memory.models';
+import { SupabaseService } from './supabase.service';
+
+interface AlbumPhotoRow {
+  id: string;
+  title: string | null;
+  description: string | null;
+  photo_path: string;
+  photo_date: string | null;
+  is_favorite: boolean;
+  sort_order: number;
+}
+
+interface ProfileRow {
+  display_name: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MemoriesService {
+  private readonly supabase = inject(SupabaseService);
+  private readonly signedUrlSeconds = 60 * 60;
+
+  async getAlbumPhotos(): Promise<MemoryPhoto[]> {
+    const client = this.supabase.getClient();
+    const { data, error } = await client
+      .from('album_photos')
+      .select('id,title,description,photo_path,photo_date,is_favorite,sort_order')
+      .order('photo_date', { ascending: false, nullsFirst: false })
+      .order('sort_order', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    const rows = (data ?? []) as AlbumPhotoRow[];
+    const signedUrls = await Promise.all(rows.map((row) => this.createSignedUrl('album', row.photo_path)));
+
+    return rows.map((row, index) => ({
+      id: row.id,
+      title: row.title ?? 'Recuerdo',
+      description: row.description ?? '',
+      photoPath: row.photo_path,
+      photoUrl: signedUrls[index],
+      photoDate: row.photo_date,
+      isFavorite: row.is_favorite,
+      sortOrder: row.sort_order,
+    }));
+  }
+
+  async getCurrentProfile(): Promise<ProfileInfo | null> {
+    const client = this.supabase.getClient();
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+
+    if (!user) {
+      return null;
+    }
+
+    const { data, error } = await client
+      .from('profiles')
+      .select('display_name,username,avatar_url')
+      .eq('id', user.id)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    const profile = data as ProfileRow;
+
+    return {
+      displayName: profile.display_name,
+      username: profile.username,
+      avatarPath: profile.avatar_url,
+      avatarUrl: profile.avatar_url ? await this.createSignedUrl('avatars', profile.avatar_url) : null,
+    };
+  }
+
+  private async createSignedUrl(bucket: string, path: string): Promise<string> {
+    const { data, error } = await this.supabase.getClient().storage.from(bucket).createSignedUrl(path, this.signedUrlSeconds);
+
+    if (error || !data?.signedUrl) {
+      throw error ?? new Error(`No se pudo firmar ${bucket}/${path}.`);
+    }
+
+    return data.signedUrl;
+  }
+}

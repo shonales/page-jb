@@ -59,16 +59,10 @@ export class DashboardComponent {
       accent: 'gold',
     },
     {
-      title: 'Cartas',
-      path: '/cartas',
-      cover: 'dashboard-covers/letter.jpeg',
+      title: 'Capsula',
+      path: '/capsula',
+      cover: '',
       accent: 'rose',
-    },
-    {
-      title: 'Minijuegos',
-      path: '/juegos',
-      cover: 'dashboard-covers/game.jpeg',
-      accent: 'blue',
     },
   ];
 

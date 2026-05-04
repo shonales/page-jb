@@ -1,55 +1,44 @@
-import { Component, computed, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { starterPhotos } from '../../shared/data/couple.data';
-import { LocalPhoto } from '../../shared/models/memory.models';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { MemoriesService } from '../../core/services/memories.service';
+import { MemoryPhoto } from '../../shared/models/supabase-memory.models';
 
 @Component({
   selector: 'app-photo-album',
   standalone: true,
-  imports: [FormsModule],
   templateUrl: './photo-album.component.html',
   styleUrl: './photo-album.component.scss',
 })
-export class PhotoAlbumComponent {
-  photos = signal<LocalPhoto[]>(starterPhotos);
-  title = signal('');
-  caption = signal('');
+export class PhotoAlbumComponent implements OnInit {
+  private readonly memories = inject(MemoriesService);
+
+  photos = signal<MemoryPhoto[]>([]);
   currentIndex = signal(0);
   pageMotion = signal('');
-  showUploader = signal(false);
   lightboxOpen = signal(false);
   viewMode = signal<'grid' | 'single'>('grid');
+  loading = signal(true);
+  loadError = signal('');
 
   currentPhoto = computed(() => this.photos()[this.currentIndex()]);
   totalPages = computed(() => this.photos().length);
 
-  addPhoto(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) {
-      return;
-    }
+  ngOnInit(): void {
+    void this.loadPhotos();
+  }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const photo: LocalPhoto = {
-        id: Date.now(),
-        title: this.title().trim() || file.name.replace(/\.[^/.]+$/, ''),
-        caption: this.caption().trim() || 'Nuevo recuerdo agregado desde tu computadora.',
-        src: String(reader.result),
-        date: new Date().toISOString().slice(0, 10),
-      };
+  async loadPhotos(): Promise<void> {
+    this.loading.set(true);
+    this.loadError.set('');
 
-      this.photos.update((items) => [photo, ...items]);
+    try {
+      const photos = await this.memories.getAlbumPhotos();
+      this.photos.set(photos);
       this.currentIndex.set(0);
-      this.pageMotion.set('page-enter');
-      this.showUploader.set(false);
-      this.title.set('');
-      this.caption.set('');
-      input.value = '';
-      setTimeout(() => this.pageMotion.set(''), 460);
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      this.loadError.set('No se pudieron cargar las fotos.');
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   nextPage(): void {
@@ -73,6 +62,19 @@ export class PhotoAlbumComponent {
     this.viewMode.set('single');
     this.pageMotion.set('page-enter');
     setTimeout(() => this.pageMotion.set(''), 460);
+  }
+
+  formatDate(date: string | null): string {
+    if (!date) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(new Date(`${date}T00:00:00Z`));
   }
 
   private turnPage(direction: 1 | -1): void {
