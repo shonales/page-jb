@@ -6,6 +6,7 @@
     </div>
 
     <div class="album-tools">
+      <button class="soft" type="button" (click)="showUploadForm.set(!showUploadForm())">Subir foto</button>
       @if (viewMode() === 'grid') {
         <button class="dark" type="button" (click)="openSingle(0)" [disabled]="totalPages() === 0">Modo libro</button>
       } @else {
@@ -17,6 +18,30 @@
       }
     </div>
   </section>
+
+  @if (showUploadForm()) {
+    <section class="upload-panel">
+      <label>
+        Título
+        <input type="text" [(ngModel)]="uploadTitle" placeholder="Ej: Nuestra primera cita" />
+      </label>
+      <label>
+        Descripción
+        <input type="text" [(ngModel)]="uploadDescription" placeholder="¿Qué pasó este día?" />
+      </label>
+      <label>
+        Fecha
+        <input type="date" [(ngModel)]="uploadDate" />
+      </label>
+      <label class="file-picker">
+        Seleccionar foto
+        <input type="file" accept="image/*" (change)="handleFileChange($event)" />
+      </label>
+      <button [disabled]="isUploading()" (click)="submitUpload()">
+        {{ isUploading() ? 'Subiendo...' : 'Guardar recuerdo' }}
+      </button>
+    </section>
+  }
 
   @if (loading()) {
     <section class="state-panel">Cargando fotos...</section>

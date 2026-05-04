@@ -1,10 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MemoriesService } from '../../core/services/memories.service';
 import { MemoryPhoto } from '../../shared/models/supabase-memory.models';
 
 @Component({
   selector: 'app-photo-album',
   standalone: true,
+  imports: [FormsModule],
   templateUrl: './photo-album.component.html',
   styleUrl: './photo-album.component.scss',
 })
@@ -19,6 +21,14 @@ export class PhotoAlbumComponent implements OnInit {
   isExpanded = signal(false);
   loading = signal(true);
   loadError = signal('');
+
+  // Upload signals
+  showUploadForm = signal(false);
+  isUploading = signal(false);
+  uploadTitle = signal('');
+  uploadDescription = signal('');
+  uploadDate = signal(new Date().toISOString().split('T')[0]);
+  selectedFile: File | null = null;
 
   currentPhoto = computed(() => this.photos()[this.currentIndex()]);
   totalPages = computed(() => this.photos().length);
@@ -39,6 +49,41 @@ export class PhotoAlbumComponent implements OnInit {
       this.loadError.set('No se pudieron cargar las fotos.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  handleFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  async submitUpload(): Promise<void> {
+    if (!this.selectedFile || !this.uploadTitle()) {
+      alert('Por favor selecciona una foto y ponle un título.');
+      return;
+    }
+
+    this.isUploading.set(true);
+    try {
+      await this.memories.uploadPhoto(this.selectedFile, {
+        title: this.uploadTitle(),
+        description: this.uploadDescription(),
+        date: this.uploadDate(),
+      });
+
+      // Reset form and reload
+      this.showUploadForm.set(false);
+      this.uploadTitle.set('');
+      this.uploadDescription.set('');
+      this.selectedFile = null;
+      await this.loadPhotos();
+    } catch (err) {
+      console.error(err);
+      alert('Error al subir la foto.');
+    } finally {
+      this.isUploading.set(false);
     }
   }
 

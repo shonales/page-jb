@@ -91,4 +91,26 @@ export class MemoriesService {
 
     return data.signedUrl;
   }
+
+  async uploadPhoto(file: File, metadata: { title: string; description: string; date: string }): Promise<void> {
+    const client = this.supabase.getClient();
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `user-uploads/${fileName}`;
+
+    // 1. Upload to storage
+    const { error: uploadError } = await client.storage.from('album').upload(filePath, file);
+    if (uploadError) throw uploadError;
+
+    // 2. Insert into database
+    const { error: dbError } = await client.from('album_photos').insert({
+      title: metadata.title,
+      description: metadata.description,
+      photo_path: filePath,
+      photo_date: metadata.date,
+      sort_order: 0,
+    });
+
+    if (dbError) throw dbError;
+  }
 }
