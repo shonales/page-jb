@@ -189,6 +189,13 @@ input {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   min-height: 0;
+  background: #fdf6ec;
+  animation: imgFadeIn 0.8s ease forwards;
+}
+
+@keyframes imgFadeIn {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
 }
 
 .thumb-card > div:not(.photo-placeholder) {

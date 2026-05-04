@@ -58,7 +58,7 @@
     <section class="gallery-grid" aria-label="Todas las fotos del album">
       @for (photo of photos(); track photo.id) {
         <button class="thumb-card" type="button" (click)="openSingle($index)">
-          <img [src]="photo.photoUrl" [alt]="photo.title" />
+          <img [src]="photo.photoUrl" [alt]="photo.title" loading="lazy" />
           <div>
             @if (photo.photoDate) {
               <time>{{ formatDate(photo.photoDate) }}</time>

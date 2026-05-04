@@ -24,6 +24,7 @@ interface ProfileRow {
 export class MemoriesService {
   private readonly supabase = inject(SupabaseService);
   private readonly signedUrlSeconds = 60 * 60;
+  private readonly urlCache = new Map<string, { url: string; expiry: number }>();
 
   async getAlbumPhotos(): Promise<MemoryPhoto[]> {
     const client = this.supabase.getClient();
@@ -38,18 +39,28 @@ export class MemoriesService {
     }
 
     const rows = (data ?? []) as AlbumPhotoRow[];
-    const signedUrls = await Promise.all(rows.map((row) => this.createSignedUrl('album', row.photo_path)));
+    
+    // Optimizamos obteniendo las URLs. 
+    return rows.map((row) => {
+      const photoUrl = this.getPhotoUrl('album', row.photo_path);
+      return {
+        id: row.id,
+        title: row.title ?? 'Recuerdo',
+        description: row.description ?? '',
+        photoPath: row.photo_path,
+        photoUrl: photoUrl,
+        photoDate: row.photo_date,
+        isFavorite: row.is_favorite,
+        sortOrder: row.sort_order,
+      };
+    });
+  }
 
-    return rows.map((row, index) => ({
-      id: row.id,
-      title: row.title ?? 'Recuerdo',
-      description: row.description ?? '',
-      photoPath: row.photo_path,
-      photoUrl: signedUrls[index],
-      photoDate: row.photo_date,
-      isFavorite: row.is_favorite,
-      sortOrder: row.sort_order,
-    }));
+  private getPhotoUrl(bucket: string, path: string): string {
+    // getPublicUrl es instantáneo y no requiere esperar una promesa (async/await)
+    // Esto acelera mucho la carga inicial.
+    const { data } = this.supabase.getClient().storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
   }
 
   async getCurrentProfile(): Promise<ProfileInfo | null> {
@@ -78,16 +89,28 @@ export class MemoriesService {
       displayName: profile.display_name,
       username: profile.username,
       avatarPath: profile.avatar_url,
-      avatarUrl: profile.avatar_url ? await this.createSignedUrl('avatars', profile.avatar_url) : null,
+      avatarUrl: profile.avatar_url ? this.getPhotoUrl('avatars', profile.avatar_url) : null,
     };
   }
 
+  // Mantenemos createSignedUrl por si se necesita para buckets privados en el futuro
   private async createSignedUrl(bucket: string, path: string): Promise<string> {
+    const cacheKey = `${bucket}:${path}`;
+    const cached = this.urlCache.get(cacheKey);
+    if (cached && cached.expiry > Date.now()) {
+      return cached.url;
+    }
+
     const { data, error } = await this.supabase.getClient().storage.from(bucket).createSignedUrl(path, this.signedUrlSeconds);
 
     if (error || !data?.signedUrl) {
       throw error ?? new Error(`No se pudo firmar ${bucket}/${path}.`);
     }
+
+    this.urlCache.set(cacheKey, {
+      url: data.signedUrl,
+      expiry: Date.now() + (this.signedUrlSeconds - 60) * 1000
+    });
 
     return data.signedUrl;
   }
