@@ -1,0 +1,115 @@
+<main class="album-page">
+  <section class="album-heading">
+    <div>
+      <p class="kicker">/albun</p>
+      <h1>Libro de fotos</h1>
+      <p>Primero mira todas las fotos en miniatura. Luego abre el modo de una foto para verla como libro.</p>
+    </div>
+
+    <div class="album-tools">
+      <button type="button" (click)="showUploader.set(!showUploader())">
+        {{ showUploader() ? 'Ocultar' : 'Agregar foto' }}
+      </button>
+      @if (viewMode() === 'grid') {
+        <button class="dark" type="button" (click)="openSingle(currentIndex())">Modo ver una foto</button>
+      } @else {
+        <button class="soft" type="button" (click)="viewMode.set('grid')">Ver todas</button>
+        <button class="dark" type="button" (click)="lightboxOpen.set(true)">Pantalla completa</button>
+      }
+    </div>
+  </section>
+
+  @if (showUploader()) {
+    <section class="upload-panel">
+      <label>
+        Titulo
+        <input
+          type="text"
+          [ngModel]="title()"
+          (ngModelChange)="title.set($event)"
+          placeholder="Ej. Nuestra salida favorita"
+        />
+      </label>
+      <label>
+        Descripcion
+        <input
+          type="text"
+          [ngModel]="caption()"
+          (ngModelChange)="caption.set($event)"
+          placeholder="Una frase corta"
+        />
+      </label>
+      <label class="file-picker">
+        <span>Subir foto</span>
+        <input type="file" accept="image/*" (change)="addPhoto($event)" />
+      </label>
+    </section>
+  }
+
+  @if (viewMode() === 'grid') {
+    <section class="gallery-grid" aria-label="Todas las fotos del album">
+      @for (photo of photos(); track photo.id) {
+        <button class="thumb-card" type="button" (click)="openSingle($index)">
+          @if (photo.src) {
+            <img [src]="photo.src" [alt]="photo.title" />
+          } @else {
+            <div class="photo-placeholder">
+              <span>{{ photo.title.charAt(0) }}</span>
+            </div>
+          }
+          <div>
+            <time>{{ photo.date }}</time>
+            <h2>{{ photo.title }}</h2>
+            <p>{{ photo.caption }}</p>
+          </div>
+        </button>
+      }
+    </section>
+  } @else {
+    <section class="book-stage">
+      <div class="book">
+        <div class="book-spine"></div>
+
+        <article class="book-page left-page" [class]="pageMotion()">
+          <p class="page-label">Page JB</p>
+          <h2>{{ currentPhoto().title }}</h2>
+          <p>{{ currentPhoto().caption }}</p>
+          <time>{{ currentPhoto().date }}</time>
+        </article>
+
+        <article class="book-page photo-page" [class]="pageMotion()">
+          @if (currentPhoto().src) {
+            <img [src]="currentPhoto().src" [alt]="currentPhoto().title" />
+          } @else {
+            <div class="photo-placeholder">
+              <span>{{ currentPhoto().title.charAt(0) }}</span>
+              <p>Sube una foto para reemplazar esta pagina.</p>
+            </div>
+          }
+        </article>
+      </div>
+
+      <div class="book-controls">
+        <button type="button" (click)="previousPage()" [disabled]="currentIndex() === 0">Anterior</button>
+        <span>{{ currentIndex() + 1 }} / {{ totalPages() }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="currentIndex() === totalPages() - 1">Siguiente</button>
+      </div>
+    </section>
+  }
+
+  @if (lightboxOpen()) {
+    <section class="lightbox" aria-label="Vista de pantalla completa">
+      <button class="close-lightbox" type="button" (click)="lightboxOpen.set(false)" aria-label="Cerrar">X</button>
+      <div class="lightbox-photo">
+        @if (currentPhoto().src) {
+          <img [src]="currentPhoto().src" [alt]="currentPhoto().title" />
+        } @else {
+          <div class="photo-placeholder">
+            <span>{{ currentPhoto().title.charAt(0) }}</span>
+            <p>Esta pagina aun no tiene foto.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</main>

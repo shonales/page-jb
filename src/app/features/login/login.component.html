@@ -1,0 +1,104 @@
+<main class="login-page">
+  <section class="login-card" aria-label="Login Page JB">
+    <div class="cat-avatar" [class]="'cat-avatar cat-' + catMood()" aria-label="Gato animado de Page JB">
+      <div class="cat-scene">
+        <div class="cat-tail"></div>
+        <div class="cat-body"></div>
+        <div class="cat-paw left"></div>
+        <div class="cat-paw right"></div>
+        <div class="cat-head">
+          <span class="ear left"></span>
+          <span class="ear right"></span>
+          <span class="eye left"></span>
+          <span class="eye right"></span>
+          <span class="nose"></span>
+          <span class="mouth"></span>
+          <span class="cheek left"></span>
+          <span class="cheek right"></span>
+        </div>
+
+        @if (catMood() === 'play') {
+          <span class="cat-toy toy-ball"></span>
+        }
+        @if (catMood() === 'eat') {
+          <span class="cat-toy food-bowl"></span>
+        }
+        @if (catMood() === 'nap') {
+          <span class="cat-toy sleep-mark">z</span>
+          <span class="cat-toy sleep-mark second">z</span>
+        }
+        @if (catMood() === 'love') {
+          <span class="cat-toy heart one"></span>
+          <span class="cat-toy heart two"></span>
+        }
+        @if (catMood() === 'stretch') {
+          <span class="cat-toy stretch-shadow"></span>
+        }
+        @if (catMood() === 'groom') {
+          <span class="cat-toy groom-spark one"></span>
+          <span class="cat-toy groom-spark two"></span>
+        }
+        @if (catMood() === 'friend') {
+          <span class="cat-toy yarn-ball"></span>
+          <span class="friend-cat">
+            <span class="friend-ear left"></span>
+            <span class="friend-ear right"></span>
+            <span class="friend-head"></span>
+            <span class="friend-body"></span>
+            <span class="friend-tail"></span>
+          </span>
+        }
+      </div>
+    </div>
+
+    <form (ngSubmit)="enter()" class="login-form">
+      <label>
+        <span class="field-label">Usuario</span>
+        <span class="field">
+          <span class="field-icon" aria-hidden="true">
+            <img src="/login-icons/user.svg" alt="" />
+          </span>
+          <input
+            name="email"
+            type="text"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event); loginError.set('')"
+            autocomplete="username"
+          />
+        </span>
+      </label>
+
+      <label>
+        <span class="field-label">Contraseña</span>
+        <span class="field password-field">
+          <span class="field-icon" aria-hidden="true">
+            <img src="/login-icons/password.svg" alt="" />
+          </span>
+          <input
+            name="code"
+            [type]="passwordVisible() ? 'text' : 'password'"
+            [ngModel]="accessCode()"
+            (ngModelChange)="accessCode.set($event); loginError.set('')"
+            (focus)="passwordFocused.set(true)"
+            (blur)="passwordFocused.set(false)"
+            autocomplete="current-password"
+          />
+          <button
+            class="password-toggle"
+            type="button"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="passwordVisible() ? 'Ocultar contrasena' : 'Ver contrasena'"
+          >
+            <img [src]="passwordVisible() ? '/login-icons/eye-off.svg' : '/login-icons/eye-show.svg'" alt="" />
+          </button>
+        </span>
+      </label>
+
+      @if (loginError()) {
+        <p class="login-error">{{ loginError() }}</p>
+      }
+
+      <button class="login-button" type="submit">Ingresar</button>
+    </form>
+  </section>
+</main>

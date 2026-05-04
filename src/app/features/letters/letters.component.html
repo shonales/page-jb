@@ -1,0 +1,38 @@
+<section class="letters-section" id="cartas">
+  <div class="section-heading">
+    <p class="kicker">Cartas</p>
+    <h2>Mensajes para guardar</h2>
+    <p>Escribe cartas cortas, promesas o notas. Luego estas cartas se guardaran en Supabase.</p>
+  </div>
+
+  <div class="letter-composer">
+    <input
+      type="text"
+      [ngModel]="title()"
+      (ngModelChange)="title.set($event)"
+      placeholder="Titulo de la carta"
+    />
+    <textarea
+      [ngModel]="body()"
+      (ngModelChange)="body.set($event)"
+      placeholder="Escribe algo para Behetsave..."
+      rows="5"
+    ></textarea>
+    <button type="button" (click)="addLetter()">Guardar carta</button>
+  </div>
+
+  <div class="letters-grid">
+    @for (letter of letters(); track letter.title + letter.date) {
+      <article>
+        <div class="letter-top">
+          <time>{{ letter.date }}</time>
+          @if (letter.lockedUntil) {
+            <span>Bloqueada hasta {{ letter.lockedUntil }}</span>
+          }
+        </div>
+        <h3>{{ letter.title }}</h3>
+        <p>{{ letter.preview }}</p>
+      </article>
+    }
+  </div>
+</section>

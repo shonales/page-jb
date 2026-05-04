@@ -1,0 +1,41 @@
+<section class="hero-section" id="inicio">
+  <div class="hero-copy">
+    <p class="kicker">Pagina privada</p>
+    <h1>Jhon & Behetsave</h1>
+    <p class="lead">
+      Un album vivo para guardar fotos, cartas, fechas importantes, juegos y sorpresas de su historia.
+    </p>
+
+    <div class="hero-actions">
+      <button type="button" (click)="navigateTo.emit('album')">Subir fotos</button>
+      <button class="ghost" type="button" (click)="navigateTo.emit('cartas')">Ver cartas</button>
+    </div>
+  </div>
+
+  <div class="couple-panel">
+    <div class="names">
+      <span>{{ profile.jhonName }}</span>
+      <strong>+</strong>
+      <span>{{ profile.behetsaveName }}</span>
+    </div>
+
+    <div class="stats-grid">
+      <article>
+        <span>{{ daysTogether() }}</span>
+        <p>dias desde el aniversario</p>
+      </article>
+      <article>
+        <span>{{ nextAnniversary() }}</span>
+        <p>dias para el proximo 04/05</p>
+      </article>
+      <article>
+        <span>23/03</span>
+        <p>cumpleanos de Behetsave</p>
+      </article>
+      <article>
+        <span>18/11</span>
+        <p>cumpleanos de Jhon</p>
+      </article>
+    </div>
+  </div>
+</section>

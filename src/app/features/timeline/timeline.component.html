@@ -1,0 +1,23 @@
+<main class="timeline-section">
+  <div class="section-heading">
+    <p class="kicker">/timeline</p>
+    <h1>Linea de tiempo</h1>
+    <p>Cada recuerdo aparece cuando lo vas encontrando al desplazarte.</p>
+  </div>
+
+  <div class="timeline">
+    @for (item of items; track item.date + item.title) {
+      <article class="timeline-item">
+        <div class="marker"></div>
+        <div class="content">
+          <div class="meta">
+            <time>{{ item.date }}</time>
+            <span>{{ item.tag }}</span>
+          </div>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.description }}</p>
+        </div>
+      </article>
+    }
+  </div>
+</main>

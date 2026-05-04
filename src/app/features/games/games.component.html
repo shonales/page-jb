@@ -1,0 +1,16 @@
+<section class="games-section" id="juegos">
+  <div>
+    <p class="kicker">Minijuegos</p>
+    <h2>Zona lista para jugar</h2>
+    <p class="lead">Aun no agrego juegos porque dijiste que luego me diras cuales. Dejo el espacio preparado.</p>
+  </div>
+
+  <div class="ideas">
+    @for (idea of ideas; track idea) {
+      <article>
+        <span>{{ $index + 1 }}</span>
+        <p>{{ idea }}</p>
+      </article>
+    }
+  </div>
+</section>
