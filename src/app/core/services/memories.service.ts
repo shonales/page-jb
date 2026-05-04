@@ -40,27 +40,19 @@ export class MemoriesService {
 
     const rows = (data ?? []) as AlbumPhotoRow[];
     
-    // Optimizamos obteniendo las URLs. 
-    return rows.map((row) => {
-      const photoUrl = this.getPhotoUrl('album', row.photo_path);
-      return {
-        id: row.id,
-        title: row.title ?? 'Recuerdo',
-        description: row.description ?? '',
-        photoPath: row.photo_path,
-        photoUrl: photoUrl,
-        photoDate: row.photo_date,
-        isFavorite: row.is_favorite,
-        sortOrder: row.sort_order,
-      };
-    });
-  }
+    // Revertimos a signed URLs para asegurar que carguen si el bucket no es público
+    const signedUrls = await Promise.all(rows.map((row) => this.createSignedUrl('album', row.photo_path)));
 
-  private getPhotoUrl(bucket: string, path: string): string {
-    // getPublicUrl es instantáneo y no requiere esperar una promesa (async/await)
-    // Esto acelera mucho la carga inicial.
-    const { data } = this.supabase.getClient().storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
+    return rows.map((row, index) => ({
+      id: row.id,
+      title: row.title ?? 'Recuerdo',
+      description: row.description ?? '',
+      photoPath: row.photo_path,
+      photoUrl: signedUrls[index],
+      photoDate: row.photo_date,
+      isFavorite: row.is_favorite,
+      sortOrder: row.sort_order,
+    }));
   }
 
   async getCurrentProfile(): Promise<ProfileInfo | null> {
@@ -89,11 +81,10 @@ export class MemoriesService {
       displayName: profile.display_name,
       username: profile.username,
       avatarPath: profile.avatar_url,
-      avatarUrl: profile.avatar_url ? this.getPhotoUrl('avatars', profile.avatar_url) : null,
+      avatarUrl: profile.avatar_url ? await this.createSignedUrl('avatars', profile.avatar_url) : null,
     };
   }
 
-  // Mantenemos createSignedUrl por si se necesita para buckets privados en el futuro
   private async createSignedUrl(bucket: string, path: string): Promise<string> {
     const cacheKey = `${bucket}:${path}`;
     const cached = this.urlCache.get(cacheKey);
